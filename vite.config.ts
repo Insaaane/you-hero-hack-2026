@@ -27,8 +27,8 @@ export default defineConfig({
         short_name: 'Обходчик ТО',
         description:
           'PWA для плановых обходов оборудования: маршруты, чек-листы, показания, фотофиксация и офлайн-режим.',
-        theme_color: '#1677ff',
-        background_color: '#f4f7f5',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
         lang: 'ru',
         display: 'standalone',
         orientation: 'portrait',
