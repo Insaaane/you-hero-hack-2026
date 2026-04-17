@@ -665,6 +665,9 @@ body {
 }
 
 .task-defect-section__menu.ant-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
   width: 36px;
   height: 36px;
   border-radius: 8px;
@@ -698,8 +701,17 @@ body {
   font-size: 14px;
 }
 
+.task-defect-section__list.ant-space {
+  width: 100%;
+}
+
+.task-defect-section__list.ant-space > .ant-space-item {
+  width: 100%;
+}
+
 .task-defect-section__content {
-  padding: 16px;
+  position: relative;
+  padding: 16px 44px 16px 16px;
   border: 1px solid #edf0f2;
   border-radius: 12px;
   background: #ffffff;
@@ -934,6 +946,45 @@ body {
   border-radius: 50%;
   background: rgb(255 255 255 / 92%);
   box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+}
+
+.task-delete-defect-modal.ant-modal {
+  width: 100vw !important;
+  max-width: 402px;
+  margin: 0 auto;
+  padding-bottom: 0;
+}
+
+.task-delete-defect-modal .ant-modal-header {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.task-delete-defect-modal .ant-modal-title {
+  font-size: 21px;
+}
+
+.task-delete-defect-modal .ant-modal-body {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.task-delete-defect-modal__text.ant-typography {
+  margin: 0;
+  color: #303238;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.task-delete-defect-modal .ant-modal-footer {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid #edf0f2;
+}
+
+.task-delete-defect-modal__footer > .ant-btn {
+  padding: 0;
 }
 
 .task-deviation-modal.ant-modal {

@@ -35,6 +35,7 @@ import {
   type ReadingFormValues,
 } from "../lib/readings";
 import { TaskCriticalAlert } from "./TaskCriticalAlert";
+import { TaskDeleteDefectConfirmModal } from "./TaskDeleteDefectConfirmModal";
 import { TaskDeviationModal } from "./TaskDeviationModal";
 import { TaskDefectFormModal } from "./TaskDefectFormModal";
 import { TaskDefectSection } from "./TaskDefectSection";
@@ -61,9 +62,12 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   );
   const [status, setStatus] = useState<InspectionTaskStatus>(task.status);
   const [isEditing, setIsEditing] = useState(task.status === "pending");
-  const [defectInfo, setDefectInfo] = useState<
-    InspectionDefectInfo | undefined
-  >(task.defect);
+  const [defectInfos, setDefectInfos] = useState<InspectionDefectInfo[]>(() =>
+    task.defect ? [task.defect] : [],
+  );
+  const [activeDefectIndex, setActiveDefectIndex] = useState<number | null>(
+    null,
+  );
   const [violations, setViolations] = useState<InspectionReadingViolation[]>(
     () =>
       task.status === "critical" ? getReadingViolations(task.readings) : [],
@@ -71,6 +75,7 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const [isDeviationModalOpen, setIsDeviationModalOpen] = useState(false);
   const [defectFormMode, setDefectFormMode] = useState<DefectFormMode>("add");
   const [isDefectFormOpen, setIsDefectFormOpen] = useState(false);
+  const [isDeleteDefectModalOpen, setIsDeleteDefectModalOpen] = useState(false);
   const [taskSuccessAlert, setTaskSuccessAlert] =
     useState<TaskSuccessAlert | null>(null);
   const formValues = (Form.useWatch([], form) ??
@@ -84,24 +89,46 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const isActionDisabled = isEditing && !isFormComplete;
   const isEditingSavedTask = isEditing && task.status !== "pending";
   const canManageDefect = status === "pending" || isEditing;
+  const activeDefect =
+    activeDefectIndex === null ? undefined : defectInfos[activeDefectIndex];
 
   const openAddDefectModal = useCallback(() => {
-    setDefectFormMode(defectInfo ? "edit" : "add");
+    setActiveDefectIndex(null);
+    setDefectFormMode("add");
     setIsDefectFormOpen(true);
-  }, [defectInfo]);
+  }, []);
 
-  const openEditDefectModal = useCallback(() => {
+  const openEditDefectModal = useCallback((defectIndex: number) => {
+    setActiveDefectIndex(defectIndex);
     setDefectFormMode("edit");
     setIsDefectFormOpen(true);
   }, []);
 
   const closeDefectForm = useCallback(() => {
     setIsDefectFormOpen(false);
+    setActiveDefectIndex(null);
   }, []);
 
-  const deleteDefect = useCallback(() => {
-    setDefectInfo(undefined);
+  const openDeleteDefectModal = useCallback((defectIndex: number) => {
+    setActiveDefectIndex(defectIndex);
+    setIsDeleteDefectModalOpen(true);
   }, []);
+
+  const closeDeleteDefectModal = useCallback(() => {
+    setIsDeleteDefectModalOpen(false);
+    setActiveDefectIndex(null);
+  }, []);
+
+  const confirmDeleteDefect = useCallback(() => {
+    if (activeDefectIndex !== null) {
+      setDefectInfos((currentDefects) =>
+        currentDefects.filter((_, defectIndex) => defectIndex !== activeDefectIndex),
+      );
+    }
+
+    setIsDeleteDefectModalOpen(false);
+    setActiveDefectIndex(null);
+  }, [activeDefectIndex]);
 
   useEffect(() => {
     if (canManageDefect) {
@@ -173,7 +200,16 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const handleSubmitDefect = (defect: InspectionDefectInfo) => {
     const isEditingDefect = defectFormMode === "edit";
 
-    setDefectInfo(defect);
+    setDefectInfos((currentDefects) => {
+      if (isEditingDefect && activeDefectIndex !== null) {
+        return currentDefects.map((currentDefect, defectIndex) =>
+          defectIndex === activeDefectIndex ? defect : currentDefect,
+        );
+      }
+
+      return [...currentDefects, defect];
+    });
+    setActiveDefectIndex(null);
     setIsDefectFormOpen(false);
     setTaskSuccessAlert({
       title: isEditingDefect ? "Данные дефекта обновлены" : "Дефект добавлен",
@@ -238,11 +274,11 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
         />
 
         <TaskDefectSection
-          defect={defectInfo}
+          defects={defectInfos}
           canManage={canManageDefect}
           onAdd={openAddDefectModal}
           onEdit={openEditDefectModal}
-          onDelete={deleteDefect}
+          onDelete={openDeleteDefectModal}
         />
       </Card>
 
@@ -285,11 +321,18 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
         <TaskDefectFormModal
           open
           mode={defectFormMode}
-          initialDefect={defectFormMode === "edit" ? defectInfo : undefined}
+          initialDefect={defectFormMode === "edit" ? activeDefect : undefined}
           onCancel={closeDefectForm}
           onSubmit={handleSubmitDefect}
         />
       )}
+
+      <TaskDeleteDefectConfirmModal
+        open={isDeleteDefectModalOpen}
+        defect={activeDefect}
+        onCancel={closeDeleteDefectModal}
+        onConfirm={confirmDeleteDefect}
+      />
     </main>
   );
 }
