@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Button, Progress, Typography } from 'antd'
 import { useNavigate } from 'react-router'
 import {
@@ -17,8 +18,27 @@ const taskStatusClassName: Record<InspectionTask['status'], string> = {
 
 export function WorkerInspectionRequestPage() {
   const navigate = useNavigate()
+  const [isPageBottomReached, setIsPageBottomReached] = useState(false)
   const progressPercent =
     (inspectionRequest.completedTasks / inspectionRequest.totalTasks) * 100
+
+  useEffect(() => {
+    const updateBottomState = () => {
+      const scrollBottom = window.scrollY + window.innerHeight
+      const pageBottom = document.documentElement.scrollHeight
+
+      setIsPageBottomReached(scrollBottom >= pageBottom - 2)
+    }
+
+    updateBottomState()
+    window.addEventListener('scroll', updateBottomState, { passive: true })
+    window.addEventListener('resize', updateBottomState)
+
+    return () => {
+      window.removeEventListener('scroll', updateBottomState)
+      window.removeEventListener('resize', updateBottomState)
+    }
+  }, [])
 
   return (
     <main className="inspection-request-page">
@@ -101,7 +121,11 @@ export function WorkerInspectionRequestPage() {
         </div>
       </section>
 
-      <footer className="inspection-bottom-action">
+      <footer
+        className={`inspection-bottom-action ${
+          isPageBottomReached ? 'inspection-bottom-action--no-shadow' : ''
+        }`}
+      >
         <Button
           type="primary"
           size="large"

@@ -447,6 +447,11 @@ button {
   background: #ffffff;
   box-shadow: 0 -10px 32px rgb(0 0 0 / 18%);
   transform: translateX(-50%);
+  transition: box-shadow 0.18s ease;
+}
+
+.inspection-bottom-action--no-shadow {
+  box-shadow: none;
 }
 
 .inspection-bottom-action .ant-btn {
