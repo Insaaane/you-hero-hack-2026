@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   LeftOutlined,
   MenuUnfoldOutlined,
@@ -33,6 +33,11 @@ export function WorkerTopbar({
   onOpenQrScanner,
   showQrScannerAction = true,
 }: WorkerTopbarProps) {
+  const rightButtonCount =
+    1 + (showQrScannerAction ? 1 : 0) + (rightAction ? 1 : 0);
+  const sideStyle = {
+    "--worker-topbar-side-width": `${rightButtonCount * 44}px`,
+  } as CSSProperties;
   const customAction = rightAction ? (
     <Button
       type="text"
@@ -54,13 +59,15 @@ export function WorkerTopbar({
         hasScrolled ? "worker-topbar--scrolled" : ""
       }`}
     >
-      <Button
-        type="text"
-        className="worker-topbar__button"
-        aria-label="Назад"
-        icon={<LeftOutlined />}
-        onClick={onBack}
-      />
+      <Flex align="center" className="worker-topbar__side" style={sideStyle}>
+        <Button
+          type="text"
+          className="worker-topbar__button"
+          aria-label="Назад"
+          icon={<LeftOutlined />}
+          onClick={onBack}
+        />
+      </Flex>
 
       <Typography.Text className="worker-topbar__title">
         {title}
@@ -69,7 +76,8 @@ export function WorkerTopbar({
       <Flex
         align="center"
         justify="flex-end"
-        className="worker-topbar__actions"
+        className="worker-topbar__side worker-topbar__actions"
+        style={sideStyle}
       >
         {customAction}
 

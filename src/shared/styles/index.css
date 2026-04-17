@@ -548,7 +548,7 @@ body {
 }
 
 .worker-topbar__button.ant-btn {
-  width: 52px;
+  width: 44px;
   height: 52px;
   border-radius: 0;
   color: #2d2f33;
@@ -567,8 +567,9 @@ body {
   outline-offset: -3px;
 }
 
-.worker-topbar__actions {
-  flex: 0 0 auto;
+.worker-topbar__side {
+  flex: 0 0 var(--worker-topbar-side-width, 88px);
+  min-width: 0;
 }
 
 .worker-topbar__button--danger-icon.ant-btn,
@@ -599,9 +600,9 @@ body {
 }
 
 .worker-topbar__spacer {
-  width: 52px;
+  width: 44px;
   height: 52px;
-  flex: 0 0 52px;
+  flex: 0 0 44px;
 }
 
 .worker-topbar__title {

@@ -13,7 +13,7 @@ import { WorkerAppLayout } from "@/widgets/worker-app-layout";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/dispatcher/rounds" replace />,
+    element: <Navigate to="/inspector/rounds/1488228" replace />,
   },
   {
     path: "/inspector",

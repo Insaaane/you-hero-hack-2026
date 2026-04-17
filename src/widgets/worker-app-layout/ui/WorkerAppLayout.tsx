@@ -52,11 +52,6 @@ export function WorkerAppLayout() {
     navigate(inspectionRequestPath)
   }
 
-  const handleNavigate = (path: string) => {
-    navigate(path)
-    setIsMenuOpen(false)
-  }
-
   const handleOpenQrScanner = () => {
     navigate('/inspector/qr-scanner')
   }
@@ -77,9 +72,7 @@ export function WorkerAppLayout() {
 
       <WorkerNavigationDrawer
         open={isMenuOpen}
-        selectedPath={location.pathname}
         onClose={() => setIsMenuOpen(false)}
-        onNavigate={handleNavigate}
       />
     </div>
   )
