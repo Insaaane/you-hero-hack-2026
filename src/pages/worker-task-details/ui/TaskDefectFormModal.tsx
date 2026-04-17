@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type ChangeEvent, useRef, useState } from 'react'
 import {
   CameraOutlined,
   CloseOutlined,
@@ -14,8 +14,6 @@ import {
   Input,
   Space,
   Typography,
-  Upload,
-  type UploadProps,
 } from 'antd'
 import type { InspectionDefectInfo } from '@/entities/inspection'
 import { BottomSheetModal } from '@/shared/ui'
@@ -76,6 +74,8 @@ export function TaskDefectFormModal({
   onSubmit,
 }: TaskDefectFormModalProps) {
   const [form] = Form.useForm<DefectFormValues>()
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   const [step, setStep] = useState(1)
   const [photos, setPhotos] = useState<DefectPhotoDraft[]>(
     () => initialDefect?.photos ?? [],
@@ -98,14 +98,16 @@ export function TaskDefectFormModal({
     setPhotos((currentPhotos) => [...currentPhotos, ...nextPhotos])
   }
 
-  const handleUpload: UploadProps['beforeUpload'] = (file, fileList) => {
-    if (file.uid !== fileList[0]?.uid) {
-      return Upload.LIST_IGNORE
+  const handlePhotoInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.currentTarget.files ?? [])
+
+    event.currentTarget.value = ''
+
+    if (files.length === 0) {
+      return
     }
 
-    void appendPhotos(fileList)
-
-    return Upload.LIST_IGNORE
+    void appendPhotos(files)
   }
 
   const handleNext = async () => {
@@ -217,27 +219,39 @@ export function TaskDefectFormModal({
                 <UploadOutlined />
               </span>
               <Text strong>Загрузите изображения</Text>
-              <Flex gap={8} wrap justify="center">
-                <Upload
-                  accept="image/*"
-                  capture="environment"
-                  beforeUpload={handleUpload}
-                  maxCount={1}
-                  showUploadList={false}
-                >
-                  <Button type="primary" icon={<CameraOutlined />}>
-                    Открыть камеру
-                  </Button>
-                </Upload>
 
-                <Upload
-                  accept="image/*"
-                  multiple
-                  beforeUpload={handleUpload}
-                  showUploadList={false}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="native-file-input"
+                onChange={handlePhotoInputChange}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="native-file-input"
+                onChange={handlePhotoInputChange}
+              />
+
+              <Flex gap={8} wrap justify="center">
+                <Button
+                  type="primary"
+                  icon={<CameraOutlined />}
+                  onClick={() => cameraInputRef.current?.click()}
                 >
-                  <Button icon={<PictureOutlined />}>Выбрать из галереи</Button>
-                </Upload>
+                  Открыть камеру
+                </Button>
+
+                <Button
+                  icon={<PictureOutlined />}
+                  onClick={() => galleryInputRef.current?.click()}
+                >
+                  Выбрать из галереи
+                </Button>
               </Flex>
             </Space>
           </Card>

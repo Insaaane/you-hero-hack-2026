@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -8,8 +8,6 @@ import {
   Space,
   Tag,
   Typography,
-  Upload,
-  type UploadProps,
 } from "antd";
 import type { CameraStatus } from "../model/types";
 
@@ -47,6 +45,7 @@ export function IncidentPhotoCapture() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const systemCameraInputRef = useRef<HTMLInputElement>(null);
 
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>("idle");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -150,7 +149,15 @@ export function IncidentPhotoCapture() {
     setCameraStatus("idle");
   };
 
-  const handleSystemUpload: UploadProps["beforeUpload"] = (file) => {
+  const handleSystemPhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+
+    event.currentTarget.value = "";
+
+    if (!file) {
+      return;
+    }
+
     void readPhotoFile(file)
       .then((photo) => {
         setPhotoUrl(photo);
@@ -164,8 +171,6 @@ export function IncidentPhotoCapture() {
       .catch(() => {
         setMessage("Не удалось открыть сделанный снимок.");
       });
-
-    return Upload.LIST_IGNORE;
   };
 
   const isCameraReady = cameraStatus === "ready";
@@ -238,18 +243,22 @@ export function IncidentPhotoCapture() {
               : "Открыть камеру"}
         </Button>
 
-        <Upload
+        <input
+          ref={systemCameraInputRef}
+          type="file"
           accept="image/*"
           capture="environment"
-          beforeUpload={handleSystemUpload}
-          maxCount={1}
-          showUploadList={false}
-          style={{ width: "100%" }}
+          className="native-file-input"
+          onChange={handleSystemPhotoChange}
+        />
+
+        <Button
+          size="large"
+          block
+          onClick={() => systemCameraInputRef.current?.click()}
         >
-          <Button size="large" block>
-            Снять через системную камеру
-          </Button>
-        </Upload>
+          Снять через системную камеру
+        </Button>
       </Flex>
 
       {capturedAt && (
