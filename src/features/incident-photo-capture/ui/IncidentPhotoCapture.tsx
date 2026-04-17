@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -10,160 +10,169 @@ import {
   Typography,
   Upload,
   type UploadProps,
-} from 'antd'
-import type { CameraStatus } from '../model/types'
+} from "antd";
+import type { CameraStatus } from "../model/types";
 
-const { Paragraph, Text, Title } = Typography
+const { Paragraph, Text, Title } = Typography;
 
 function formatCapturedAt() {
-  return new Intl.DateTimeFormat('ru-RU', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date())
+  return new Intl.DateTimeFormat("ru-RU", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date());
 }
 
 function readPhotoFile(file: Blob) {
   return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
+    const reader = new FileReader();
 
-    reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result)
-        return
+    reader.addEventListener("load", () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+        return;
       }
 
-      reject(new Error('Unexpected file reader result'))
-    })
+      reject(new Error("Unexpected file reader result"));
+    });
 
-    reader.addEventListener('error', () => {
-      reject(new Error('Unable to read selected photo'))
-    })
+    reader.addEventListener("error", () => {
+      reject(new Error("Unable to read selected photo"));
+    });
 
-    reader.readAsDataURL(file)
-  })
+    reader.readAsDataURL(file);
+  });
 }
 
 export function IncidentPhotoCapture() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  const [cameraStatus, setCameraStatus] = useState<CameraStatus>('idle')
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
-  const [capturedAt, setCapturedAt] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const [cameraStatus, setCameraStatus] = useState<CameraStatus>("idle");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [capturedAt, setCapturedAt] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const releaseCamera = () => {
-    streamRef.current?.getTracks().forEach((track) => track.stop())
-    streamRef.current = null
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
 
     if (videoRef.current) {
-      videoRef.current.srcObject = null
+      videoRef.current.srcObject = null;
     }
-  }
+  };
 
   useEffect(() => {
     return () => {
-      releaseCamera()
-    }
-  }, [])
+      releaseCamera();
+    };
+  }, []);
 
   const rememberCaptureTime = () => {
-    setCapturedAt(formatCapturedAt())
-  }
+    setCapturedAt(formatCapturedAt());
+  };
 
   const startCamera = async () => {
-    setMessage(null)
-    setPhotoUrl(null)
-    setCapturedAt(null)
+    setMessage(null);
+    setPhotoUrl(null);
+    setCapturedAt(null);
 
     if (!navigator.mediaDevices?.getUserMedia) {
       setMessage(
-        'Прямой доступ к камере недоступен. Используйте системную камеру или откройте приложение в HTTPS-контексте.',
-      )
-      return
+        "Прямой доступ к камере недоступен. Используйте системную камеру или откройте приложение в HTTPS-контексте.",
+      );
+      return;
     }
 
-    setCameraStatus('starting')
-    releaseCamera()
+    setCameraStatus("starting");
+    releaseCamera();
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          facingMode: { ideal: 'environment' },
+          facingMode: { ideal: "environment" },
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
-      })
+      });
 
-      streamRef.current = stream
+      streamRef.current = stream;
 
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
       }
 
-      setCameraStatus('ready')
+      setCameraStatus("ready");
     } catch (error) {
-      releaseCamera()
-      setCameraStatus('idle')
+      releaseCamera();
+      setCameraStatus("idle");
       setMessage(
-        error instanceof DOMException && error.name === 'NotAllowedError'
-          ? 'Браузер не дал доступ к камере. Проверьте разрешение и HTTPS.'
-          : 'Не удалось открыть камеру. Используйте системную камеру как запасной сценарий.',
-      )
+        error instanceof DOMException && error.name === "NotAllowedError"
+          ? "Браузер не дал доступ к камере. Проверьте разрешение и HTTPS."
+          : "Не удалось открыть камеру. Используйте системную камеру как запасной сценарий.",
+      );
     }
-  }
+  };
 
   const takePhoto = () => {
-    const video = videoRef.current
-    const canvas = canvasRef.current
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
 
-    if (!video || !canvas || video.videoWidth === 0 || video.videoHeight === 0) {
-      setMessage('Камера еще не готова. Подождите секунду и попробуйте снова.')
-      return
+    if (
+      !video ||
+      !canvas ||
+      video.videoWidth === 0 ||
+      video.videoHeight === 0
+    ) {
+      setMessage("Камера еще не готова. Подождите секунду и попробуйте снова.");
+      return;
     }
 
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-    const context = canvas.getContext('2d')
+    const context = canvas.getContext("2d");
 
     if (!context) {
-      setMessage('Браузер не смог подготовить снимок.')
-      return
+      setMessage("Браузер не смог подготовить снимок.");
+      return;
     }
 
-    context.drawImage(video, 0, 0, canvas.width, canvas.height)
-    setPhotoUrl(canvas.toDataURL('image/jpeg', 0.92))
-    rememberCaptureTime()
-    setMessage('Фото готово. В MVP-заглушке снимок хранится только в текущем окне.')
-    releaseCamera()
-    setCameraStatus('idle')
-  }
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    setPhotoUrl(canvas.toDataURL("image/jpeg", 0.92));
+    rememberCaptureTime();
+    setMessage(
+      "Фото готово. В MVP-заглушке снимок хранится только в текущем окне.",
+    );
+    releaseCamera();
+    setCameraStatus("idle");
+  };
 
-  const handleSystemUpload: UploadProps['beforeUpload'] = (file) => {
+  const handleSystemUpload: UploadProps["beforeUpload"] = (file) => {
     void readPhotoFile(file)
       .then((photo) => {
-        setPhotoUrl(photo)
-        rememberCaptureTime()
-        setMessage('Фото готово. В MVP-заглушке снимок хранится только в текущем окне.')
-        releaseCamera()
-        setCameraStatus('idle')
+        setPhotoUrl(photo);
+        rememberCaptureTime();
+        setMessage(
+          "Фото готово. В MVP-заглушке снимок хранится только в текущем окне.",
+        );
+        releaseCamera();
+        setCameraStatus("idle");
       })
       .catch(() => {
-        setMessage('Не удалось открыть сделанный снимок.')
-      })
+        setMessage("Не удалось открыть сделанный снимок.");
+      });
 
-    return Upload.LIST_IGNORE
-  }
+    return Upload.LIST_IGNORE;
+  };
 
-  const isCameraReady = cameraStatus === 'ready'
-  const isStarting = cameraStatus === 'starting'
+  const isCameraReady = cameraStatus === "ready";
+  const isStarting = cameraStatus === "starting";
 
   return (
-    <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
       <Card>
         <Space orientation="vertical" size={8}>
           <Tag color="green">MVP-заглушка</Tag>
@@ -186,7 +195,7 @@ export function IncidentPhotoCapture() {
               preview={false}
               width="100%"
               height="100%"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: "cover" }}
             />
           ) : (
             <>
@@ -218,13 +227,15 @@ export function IncidentPhotoCapture() {
           size="large"
           block
           loading={isStarting}
-          onClick={photoUrl ? startCamera : isCameraReady ? takePhoto : startCamera}
+          onClick={
+            photoUrl ? startCamera : isCameraReady ? takePhoto : startCamera
+          }
         >
           {photoUrl
-            ? 'Снять заново'
+            ? "Снять заново"
             : isCameraReady
-              ? 'Сделать фото'
-              : 'Открыть камеру'}
+              ? "Сделать фото"
+              : "Открыть камеру"}
         </Button>
 
         <Upload
@@ -233,25 +244,25 @@ export function IncidentPhotoCapture() {
           beforeUpload={handleSystemUpload}
           maxCount={1}
           showUploadList={false}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
         >
           <Button size="large" block>
             Снять через системную камеру
           </Button>
         </Upload>
-
       </Flex>
 
       {capturedAt && (
         <Alert
           type="success"
           showIcon
-          message="Снимок получен"
+          closable={{ closeIcon: true, "aria-label": "close" }}
+          title="Снимок получен"
           description={`Время фотофиксации: ${capturedAt}`}
         />
       )}
 
-      {message && <Alert type="info" showIcon message={message} />}
+      {message && <Alert type="info" showIcon title={message} />}
     </Space>
-  )
+  );
 }

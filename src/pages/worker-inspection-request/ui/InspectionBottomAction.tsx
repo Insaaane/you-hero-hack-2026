@@ -2,12 +2,12 @@ import { Button, Card } from "antd";
 
 type InspectionBottomActionProps = {
   isPageBottomReached: boolean;
-  onGoToCurrentTask: () => void;
+  onGoToNextTask: () => void;
 };
 
 export function InspectionBottomAction({
   isPageBottomReached,
-  onGoToCurrentTask,
+  onGoToNextTask,
 }: InspectionBottomActionProps) {
   return (
     <Card
@@ -17,13 +17,8 @@ export function InspectionBottomAction({
       variant="borderless"
       styles={{ body: { padding: 0 } }}
     >
-      <Button
-        type="primary"
-        size="large"
-        block
-        onClick={onGoToCurrentTask}
-      >
-        Перейти к текущей задаче
+      <Button type="primary" size="large" block onClick={onGoToNextTask}>
+        Перейти к следующей задаче
       </Button>
     </Card>
   );

@@ -19,6 +19,7 @@ export function InspectionSummaryCard({
   totalTasks,
 }: InspectionSummaryCardProps) {
   const progressPercent = (completedTasks / totalTasks) * 100
+  const isIncident = reason === 'Инцидент'
 
   return (
     <Card
@@ -30,8 +31,8 @@ export function InspectionSummaryCard({
       <Flex vertical>
         <Flex align="center" gap={8} wrap>
           <Tag
-            color="error"
-            icon={<InfoCircleOutlined />}
+            color={isIncident ? 'error' : undefined}
+            icon={isIncident ? <InfoCircleOutlined /> : undefined}
             className="inspection-summary__tag"
           >
             {reason}

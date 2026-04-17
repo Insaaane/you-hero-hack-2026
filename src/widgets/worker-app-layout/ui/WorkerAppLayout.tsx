@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { setCurrentRole } from '@/app/model/sessionSlice'
 import { useAppDispatch } from '@/shared/lib/store'
@@ -8,10 +8,19 @@ import {
   inspectionRequestPath,
 } from '../model/navigation'
 import { WorkerNavigationDrawer } from './WorkerNavigationDrawer'
-import { WorkerTopbar } from './WorkerTopbar'
+import { WorkerTopbar, type WorkerTopbarAction } from './WorkerTopbar'
+
+export type WorkerOutletContext = {
+  setTopbarAction: Dispatch<
+    SetStateAction<WorkerTopbarAction | null | undefined>
+  >
+}
 
 export function WorkerAppLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [topbarAction, setTopbarAction] = useState<
+    WorkerTopbarAction | null | undefined
+  >()
   const dispatch = useAppDispatch()
   const location = useLocation()
   const navigate = useNavigate()
@@ -44,11 +53,12 @@ export function WorkerAppLayout() {
       <WorkerTopbar
         title={title}
         hasScrolled={hasScrolled}
+        rightAction={topbarAction}
         onBack={handleBack}
         onOpenMenu={() => setIsMenuOpen(true)}
       />
 
-      <Outlet />
+      <Outlet context={{ setTopbarAction } satisfies WorkerOutletContext} />
 
       <WorkerNavigationDrawer
         open={isMenuOpen}

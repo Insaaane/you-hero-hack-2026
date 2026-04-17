@@ -1,0 +1,38 @@
+.root :global(.ant-modal-wrap) {
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+}
+
+.root :global(.ant-modal) {
+  top: auto;
+  width: 100% !important;
+  max-width: 100%;
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.root :global(.ant-modal-content) {
+  border-radius: 16px 16px 0 0;
+}
+
+.root :global(.ant-modal-footer) {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.root :global(.ant-modal-footer .ant-btn:only-child) {
+  width: 100%;
+}
+
+.sheetWrapper {
+  touch-action: none;
+  will-change: transform;
+}
+
+.dragHandle {
+  width: 36px;
+  height: 4px;
+  margin: 8px auto 4px;
+  border-radius: 999px;
+  background: #cfcfcf;
+}

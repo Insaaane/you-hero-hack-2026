@@ -1,15 +1,13 @@
 import { type KeyboardEvent } from "react";
 import { RightOutlined } from "@ant-design/icons";
-import { Badge, Card, Flex, Space, Typography } from "antd";
+import { Badge, Card, Flex, Space, Tag, Typography } from "antd";
 import type { InspectionTask } from "../model/mockInspectionRequest";
 
 const { Text } = Typography;
 
 const taskStatusColor: Record<InspectionTask["status"], string> = {
-  current: "#1677ff",
   checked: "#52c41a",
   critical: "#ff4d4f",
-  defect: "#ff4d4f",
   pending: "#d9d9d9",
 };
 
@@ -38,12 +36,22 @@ export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
       tabIndex={0}
       role="button"
       className={`inspection-task-card ${
-        task.status === "current" ? "inspection-task-card--current" : ""
+        task.marker ? "inspection-task-card--next" : ""
       }`}
       styles={{ body: { padding: 0 } }}
       onClick={() => onOpen(task.id)}
       onKeyDown={handleKeyDown}
     >
+      {task.marker && (
+        <Tag
+          color="blue"
+          variant="solid"
+          className="inspection-task-card__marker"
+        >
+          {task.marker}
+        </Tag>
+      )}
+
       <Flex
         align="center"
         justify="space-between"
@@ -61,6 +69,7 @@ export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
             align="center"
             gap={8}
             className="inspection-task-card__meta-row"
+            wrap
           >
             <Badge
               color={taskStatusColor[task.status]}
@@ -77,6 +86,17 @@ export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
             <Text className="inspection-task-card__workshop">
               {task.workshop}
             </Text>
+
+            {task.defect && (
+              <>
+                <Text type="secondary" className="inspection-task-card__dot">
+                  •
+                </Text>
+                <Text className="inspection-task-card__defect">
+                  Найдены дефекты
+                </Text>
+              </>
+            )}
           </Flex>
         </Space>
 

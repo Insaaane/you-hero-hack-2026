@@ -41,7 +41,7 @@ export function InspectionTasksSection({
             <Fragment key={task.id}>
               <InspectionTaskCard task={task} onOpen={onOpenTask} />
 
-              {task.status === "current" && (
+              {task.marker && (
                 <Divider className="inspection-tasks__divider" />
               )}
             </Fragment>

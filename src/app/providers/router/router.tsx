@@ -1,17 +1,18 @@
-import { createBrowserRouter, Navigate } from "react-router";
-import { IncidentPhotoCapture } from "@/features/incident-photo-capture";
-import { PlaceholderPage } from "@/pages/placeholder";
-import { WorkerInspectionRequestPage } from "@/pages/worker-inspection-request";
-import { DispatcherAppLayout } from "@/widgets/dispatcher-app-layout";
-import { WorkerAppLayout } from "@/widgets/worker-app-layout";
+import { createBrowserRouter, Navigate } from 'react-router'
+import { IncidentPhotoCapture } from '@/features/incident-photo-capture'
+import { PlaceholderPage } from '@/pages/placeholder'
+import { WorkerInspectionRequestPage } from '@/pages/worker-inspection-request'
+import { WorkerTaskDetailsPage } from '@/pages/worker-task-details'
+import { DispatcherAppLayout } from '@/widgets/dispatcher-app-layout'
+import { WorkerAppLayout } from '@/widgets/worker-app-layout'
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Navigate to="/inspector/rounds/1488228" replace />,
   },
   {
-    path: "/inspector",
+    path: '/inspector',
     element: <WorkerAppLayout />,
     children: [
       {
@@ -19,11 +20,11 @@ export const router = createBrowserRouter([
         element: <Navigate to="/inspector/rounds/1488228" replace />,
       },
       {
-        path: "rounds/:inspectionId",
+        path: 'rounds/:inspectionId',
         element: <WorkerInspectionRequestPage />,
       },
       {
-        path: "route",
+        path: 'route',
         element: (
           <PlaceholderPage
             title="Маршрут обхода"
@@ -32,7 +33,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "tasks",
+        path: 'tasks',
         element: (
           <PlaceholderPage
             title="Все задачи"
@@ -41,16 +42,11 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "tasks/:taskId",
-        element: (
-          <PlaceholderPage
-            title="Карточка задачи"
-            description="Здесь появятся чек-лист, показания и действия по выбранному объекту."
-          />
-        ),
+        path: 'tasks/:taskId',
+        element: <WorkerTaskDetailsPage />,
       },
       {
-        path: "checklists",
+        path: 'checklists',
         element: (
           <PlaceholderPage
             title="Чек-листы"
@@ -59,7 +55,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "readings",
+        path: 'readings',
         element: (
           <PlaceholderPage
             title="Показания"
@@ -68,7 +64,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "photo",
+        path: 'photo',
         element: (
           <main className="placeholder-page">
             <IncidentPhotoCapture />
@@ -78,7 +74,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/dispatcher",
+    path: '/dispatcher',
     element: <DispatcherAppLayout />,
     children: [
       {
@@ -93,7 +89,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <Navigate to="/" replace />,
   },
-]);
+])
