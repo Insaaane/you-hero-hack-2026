@@ -1,0 +1,86 @@
+:root {
+  color: #17211f;
+  background: #f4f7f5;
+  font: 16px/1.45 Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  letter-spacing: 0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #f4f7f5;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100svh;
+  margin: 0;
+  background: #f4f7f5;
+}
+
+#root,
+.ant-app {
+  min-height: 100svh;
+}
+
+.app-layout {
+  min-height: 100svh;
+}
+
+.app-content {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.capture-preview {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e7efec;
+}
+
+.capture-preview video,
+.capture-preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.capture-preview video {
+  opacity: 0;
+}
+
+.capture-preview video[data-ready='true'] {
+  opacity: 1;
+}
+
+.capture-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+@media (min-width: 760px) {
+  .app-content {
+    padding: 32px;
+  }
+
+  .capture-preview {
+    aspect-ratio: 4 / 3;
+  }
+}
