@@ -23,7 +23,7 @@ export const workerNavigationItems = [
   },
   {
     path: '/inspector/tasks',
-    label: 'Все задачи',
+    label: 'Все обходы',
     icon: <CheckSquareOutlined />,
   },
   {

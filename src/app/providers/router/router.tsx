@@ -40,8 +40,8 @@ export const router = createBrowserRouter([
         path: "tasks",
         element: (
           <PlaceholderPage
-            title="Все задачи"
-            description="Здесь появится список задач обходчика по текущему обходу."
+            title="Все обходы"
+            description="Здесь появится список обходов по текущему плану."
           />
         ),
       },

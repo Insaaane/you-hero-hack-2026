@@ -29,6 +29,9 @@ export function WorkerAppLayout() {
     () => getWorkerRouteTitle(location.pathname),
     [location.pathname],
   )
+  const isInspectionRoundPage = /^\/inspector\/rounds\/[^/]+\/?$/.test(
+    location.pathname,
+  )
 
   useEffect(() => {
     dispatch(setCurrentRole('inspector'))
@@ -65,7 +68,8 @@ export function WorkerAppLayout() {
         onBack={handleBack}
         onOpenMenu={() => setIsMenuOpen(true)}
         onOpenQrScanner={handleOpenQrScanner}
-        showQrScannerAction={location.pathname !== '/inspector/qr-scanner'}
+        showMenuAction={isInspectionRoundPage}
+        showQrScannerAction={isInspectionRoundPage}
       />
 
       <Outlet context={{ setTopbarAction } satisfies WorkerOutletContext} />

@@ -21,6 +21,7 @@ type WorkerTopbarProps = {
   onBack: () => void;
   onOpenMenu: () => void;
   onOpenQrScanner: () => void;
+  showMenuAction?: boolean;
   showQrScannerAction?: boolean;
 };
 
@@ -31,13 +32,18 @@ export function WorkerTopbar({
   onBack,
   onOpenMenu,
   onOpenQrScanner,
+  showMenuAction = true,
   showQrScannerAction = true,
 }: WorkerTopbarProps) {
   const rightButtonCount =
-    1 + (showQrScannerAction ? 1 : 0) + (rightAction ? 1 : 0);
+    (showMenuAction ? 1 : 0) +
+    (showQrScannerAction ? 1 : 0) +
+    (rightAction ? 1 : 0);
+  const sideButtonCount = Math.max(1, rightButtonCount);
   const sideStyle = {
-    "--worker-topbar-side-width": `${rightButtonCount * 44}px`,
+    "--worker-topbar-side-width": `${sideButtonCount * 44}px`,
   } as CSSProperties;
+
   const customAction = rightAction ? (
     <Button
       type="text"
@@ -58,6 +64,7 @@ export function WorkerTopbar({
       className={`worker-topbar ${
         hasScrolled ? "worker-topbar--scrolled" : ""
       }`}
+      style={sideStyle}
     >
       <Flex align="center" className="worker-topbar__side" style={sideStyle}>
         <Button
@@ -91,13 +98,15 @@ export function WorkerTopbar({
           />
         )}
 
-        <Button
-          type="text"
-          className="worker-topbar__button"
-          aria-label="Открыть меню"
-          icon={<MenuUnfoldOutlined />}
-          onClick={onOpenMenu}
-        />
+        {showMenuAction && (
+          <Button
+            type="text"
+            className="worker-topbar__button"
+            aria-label="Открыть меню"
+            icon={<MenuUnfoldOutlined />}
+            onClick={onOpenMenu}
+          />
+        )}
       </Flex>
     </Flex>
   );
