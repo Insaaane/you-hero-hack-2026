@@ -259,7 +259,7 @@ export function DispatcherRoundFormPage() {
       plannedTime: values.plannedTime.format("HH:mm"),
     };
 
-    navigate("/dispatcher", {
+    navigate("/dispatcher/rounds", {
       state: {
         savedRound: round,
         roundSaveMode: isEditMode ? "edit" : "create",
@@ -275,7 +275,7 @@ export function DispatcherRoundFormPage() {
           items={[
             {
               title: (
-                <Link to="/dispatcher">
+                <Link to="/dispatcher/rounds">
                   <HomeOutlined /> Главная
                 </Link>
               ),

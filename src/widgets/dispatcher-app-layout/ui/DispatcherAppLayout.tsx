@@ -20,7 +20,7 @@ const { Header, Content, Sider } = Layout;
 
 const dispatcherNavigationItems: NonNullable<MenuProps["items"]> = [
   {
-    key: "/dispatcher",
+    key: "/dispatcher/rounds",
     icon: <FileTextOutlined />,
     label: "Обходы",
   },
@@ -48,7 +48,7 @@ const dispatcherNavigationItems: NonNullable<MenuProps["items"]> = [
 
 function getSelectedNavigationKey(pathname: string) {
   if (pathname.startsWith("/dispatcher/rounds")) {
-    return "/dispatcher";
+    return "/dispatcher/rounds";
   }
 
   const selectedItem = dispatcherNavigationItems.find((item) => {
@@ -56,14 +56,14 @@ function getSelectedNavigationKey(pathname: string) {
       return false;
     }
 
-    return item.key === "/dispatcher"
+    return item.key === "/dispatcher/rounds"
       ? pathname === item.key
       : pathname.startsWith(item.key);
   });
 
   return selectedItem && "key" in selectedItem && typeof selectedItem.key === "string"
     ? selectedItem.key
-    : "/dispatcher";
+    : "/dispatcher/rounds";
 }
 
 export function DispatcherAppLayout() {
@@ -84,7 +84,7 @@ export function DispatcherAppLayout() {
     <Layout className="dispatcher-shell">
       <Header className="dispatcher-topbar">
         <Link
-          to="/dispatcher"
+          to="/dispatcher/rounds"
           className="dispatcher-topbar__brand"
           aria-label="ТехДозор"
         >

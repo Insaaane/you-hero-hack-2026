@@ -12,7 +12,7 @@ import { WorkerAppLayout } from "@/widgets/worker-app-layout";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/inspector/rounds/1488228" replace />,
+    element: <Navigate to="/dispatcher/rounds" replace />,
   },
   {
     path: "/inspector",
@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
         element: <Navigate to="/inspector/rounds/1488228" replace />,
       },
       {
-        path: "rounds/:inspectionId",
+        path: "rounds/:roundId",
         element: <WorkerInspectionRequestPage />,
       },
       {
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "tasks/:taskId",
+        path: "rounds/:roundId/tasks/:taskId",
         element: <WorkerTaskDetailsPage />,
       },
       {
@@ -82,6 +82,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Navigate to="/dispatcher/rounds" replace />,
+      },
+      {
+        path: "rounds",
         element: <DispatcherRoundsPage />,
       },
       {

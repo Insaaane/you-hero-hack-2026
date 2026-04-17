@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert } from "antd";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useIsPageBottomReached } from "@/shared/lib/viewport";
 import { inspectionRequest } from "../model/mockInspectionRequest";
 import { InspectionBottomAction } from "./InspectionBottomAction";
@@ -43,13 +43,14 @@ function getInspectionAlertContent(
 export function WorkerInspectionRequestPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { roundId = "1488228" } = useParams();
   const isPageBottomReached = useIsPageBottomReached();
   const [inspectionAlert, setInspectionAlert] = useState(() =>
     getInspectionAlertContent(location.state as InspectionRouteState),
   );
 
   const openTask = (taskId: string) => {
-    navigate(`/inspector/tasks/${taskId}`);
+    navigate(`/inspector/rounds/${roundId}/tasks/${taskId}`);
   };
 
   useEffect(() => {

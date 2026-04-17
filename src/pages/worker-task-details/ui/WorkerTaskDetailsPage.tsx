@@ -54,6 +54,7 @@ type TaskSuccessAlert = {
 function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const { setTopbarAction } = useOutletContext<WorkerOutletContext>();
   const navigate = useNavigate();
+  const { roundId = "1488228" } = useParams();
   const isPageBottomReached = useIsPageBottomReached();
   const [form] = Form.useForm<ReadingFormValues>();
   const initialFormValues = useMemo(
@@ -177,7 +178,7 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
     }
 
     setStatus("checked");
-    navigate("/inspector/rounds/1488228", {
+    navigate(`/inspector/rounds/${roundId}`, {
       state: { taskCompleted: true },
     });
   };
@@ -189,7 +190,7 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 
   const handleSubmitMaintenanceRequest = () => {
     setIsDeviationModalOpen(false);
-    navigate("/inspector/rounds/1488228", {
+    navigate(`/inspector/rounds/${roundId}`, {
       state: {
         maintenanceRequestSent: true,
         maintenanceTaskTitle: task.title,
@@ -338,11 +339,11 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 }
 
 export function WorkerTaskDetailsPage() {
-  const { taskId } = useParams();
+  const { roundId = "1488228", taskId } = useParams();
   const task = getInspectionTaskById(taskId);
 
   if (!task) {
-    return <Navigate to="/inspector/rounds/1488228" replace />;
+    return <Navigate to={`/inspector/rounds/${roundId}`} replace />;
   }
 
   return <WorkerTaskDetailsContent key={task.id} task={task} />;

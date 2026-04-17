@@ -44,14 +44,18 @@ export const workerNavigationItems = [
 ]
 
 export function getWorkerRouteTitle(pathname: string) {
-  const taskId = pathname.match(/^\/inspector\/tasks\/([^/]+)/)?.[1]
+  const taskId = pathname.match(
+    /^\/inspector\/rounds\/[^/]+\/tasks\/([^/]+)/,
+  )?.[1]
 
   if (taskId) {
     return getInspectionTaskById(taskId)?.title ?? 'Задача'
   }
 
-  if (pathname.includes('/rounds/')) {
-    return `Обход ${pathname.split('/').at(-1) ?? ''}`
+  const roundId = pathname.match(/^\/inspector\/rounds\/([^/]+)/)?.[1]
+
+  if (roundId) {
+    return `Обход ${roundId}`
   }
 
   const currentItem = workerNavigationItems.find(

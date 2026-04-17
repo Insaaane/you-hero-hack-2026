@@ -6,7 +6,7 @@ type SessionState = {
 }
 
 const initialState: SessionState = {
-  currentRole: 'inspector',
+  currentRole: 'dispatcher',
 }
 
 const sessionSlice = createSlice({

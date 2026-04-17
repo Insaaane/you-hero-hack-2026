@@ -35,6 +35,15 @@ export function WorkerAppLayout() {
   }, [dispatch])
 
   const handleBack = () => {
+    const taskRoundId = location.pathname.match(
+      /^\/inspector\/rounds\/([^/]+)\/tasks\//,
+    )?.[1]
+
+    if (taskRoundId) {
+      navigate(`/inspector/rounds/${taskRoundId}`)
+      return
+    }
+
     if (location.pathname.includes('/rounds/')) {
       navigate('/inspector/tasks')
       return
