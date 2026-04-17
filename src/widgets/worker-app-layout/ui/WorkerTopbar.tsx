@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
-import { AppstoreOutlined, LeftOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  MenuUnfoldOutlined,
+  QrcodeOutlined,
+} from "@ant-design/icons";
 import { Button, Flex, Typography } from "antd";
 
 export type WorkerTopbarAction = {
@@ -16,6 +20,8 @@ type WorkerTopbarProps = {
   rightAction?: WorkerTopbarAction | null;
   onBack: () => void;
   onOpenMenu: () => void;
+  onOpenQrScanner: () => void;
+  showQrScannerAction?: boolean;
 };
 
 export function WorkerTopbar({
@@ -24,29 +30,20 @@ export function WorkerTopbar({
   rightAction,
   onBack,
   onOpenMenu,
+  onOpenQrScanner,
+  showQrScannerAction = true,
 }: WorkerTopbarProps) {
-  const rightControl =
-    rightAction === undefined ? (
-      <Button
-        type="text"
-        className="worker-topbar__button"
-        aria-label="Открыть меню"
-        icon={<AppstoreOutlined />}
-        onClick={onOpenMenu}
-      />
-    ) : rightAction ? (
-      <Button
-        type="text"
-        danger={rightAction.danger}
-        className={`worker-topbar__button ${rightAction.className ?? ""}`}
-        aria-label={rightAction.ariaLabel}
-        icon={rightAction.icon}
-        size="large"
-        onClick={rightAction.onClick}
-      />
-    ) : (
-      <span className="worker-topbar__spacer" aria-hidden="true" />
-    );
+  const customAction = rightAction ? (
+    <Button
+      type="text"
+      danger={rightAction.danger}
+      className={`worker-topbar__button ${rightAction.className ?? ""}`}
+      aria-label={rightAction.ariaLabel}
+      icon={rightAction.icon}
+      size="large"
+      onClick={rightAction.onClick}
+    />
+  ) : null;
 
   return (
     <Flex
@@ -69,7 +66,31 @@ export function WorkerTopbar({
         {title}
       </Typography.Text>
 
-      {rightControl}
+      <Flex
+        align="center"
+        justify="flex-end"
+        className="worker-topbar__actions"
+      >
+        {customAction}
+
+        {showQrScannerAction && (
+          <Button
+            type="text"
+            className="worker-topbar__button"
+            aria-label="Сканировать QR-код"
+            icon={<QrcodeOutlined />}
+            onClick={onOpenQrScanner}
+          />
+        )}
+
+        <Button
+          type="text"
+          className="worker-topbar__button"
+          aria-label="Открыть меню"
+          icon={<MenuUnfoldOutlined />}
+          onClick={onOpenMenu}
+        />
+      </Flex>
     </Flex>
   );
 }

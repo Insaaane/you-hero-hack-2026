@@ -58,6 +58,10 @@ export function getWorkerRouteTitle(pathname: string) {
     return `Обход ${roundId}`
   }
 
+  if (pathname === '/inspector/qr-scanner') {
+    return 'QR-сканер'
+  }
+
   const currentItem = workerNavigationItems.find(
     (item) => item.path === pathname,
   )

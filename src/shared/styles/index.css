@@ -567,6 +567,10 @@ body {
   outline-offset: -3px;
 }
 
+.worker-topbar__actions {
+  flex: 0 0 auto;
+}
+
 .worker-topbar__button--danger-icon.ant-btn,
 .worker-topbar__button--danger-icon.ant-btn:hover,
 .worker-topbar__button--danger-icon.ant-btn:active,
@@ -602,11 +606,15 @@ body {
 
 .worker-topbar__title {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
   color: #2d2f33;
   font-size: 18px;
   font-weight: 500;
   line-height: 1;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dispatcher-shell__content,
@@ -614,6 +622,68 @@ body {
   width: min(100%, 960px);
   margin: 0 auto;
   padding: 16px;
+}
+
+.qr-scanner-page {
+  width: min(100%, 430px);
+  min-height: calc(100svh - 52px);
+  margin: 0 auto;
+  background: #eef0f3;
+}
+
+.qr-scanner {
+  min-height: calc(100svh - 52px);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.qr-scanner__viewport {
+  position: relative;
+  height: min(64svh, 520px);
+  min-height: 360px;
+  overflow: hidden;
+  background: #111820;
+}
+
+.qr-scanner__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qr-scanner__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(68vw, 280px);
+  max-width: calc(100% - 48px);
+  aspect-ratio: 1;
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 0 999px rgb(0 0 0 / 34%);
+  transform: translate(-50%, -50%);
+}
+
+.qr-scanner__overlay {
+  position: absolute;
+  inset: 0;
+  color: #ffffff;
+  background: rgb(17 24 32 / 72%);
+}
+
+.qr-scanner__overlay .ant-typography {
+  color: #ffffff;
+}
+
+.qr-scanner__status-card.ant-card {
+  margin: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.qr-scanner__status-icon {
+  color: #1677ff;
 }
 
 .inspection-request-page {

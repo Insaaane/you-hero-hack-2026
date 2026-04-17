@@ -5,6 +5,7 @@ import { DispatcherRoundFormPage } from "@/pages/dispatcher-round-form";
 import { DispatcherRoundsPage } from "@/pages/dispatcher-rounds";
 import { PlaceholderPage } from "@/pages/placeholder";
 import { WorkerInspectionRequestPage } from "@/pages/worker-inspection-request";
+import { WorkerQrScannerPage } from "@/pages/worker-qr-scanner";
 import { WorkerTaskDetailsPage } from "@/pages/worker-task-details";
 import { DispatcherAppLayout } from "@/widgets/dispatcher-app-layout";
 import { WorkerAppLayout } from "@/widgets/worker-app-layout";
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "rounds/:roundId/tasks/:taskId",
         element: <WorkerTaskDetailsPage />,
+      },
+      {
+        path: "qr-scanner",
+        element: <WorkerQrScannerPage />,
       },
       {
         path: "checklists",

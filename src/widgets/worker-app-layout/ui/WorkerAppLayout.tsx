@@ -57,6 +57,10 @@ export function WorkerAppLayout() {
     setIsMenuOpen(false)
   }
 
+  const handleOpenQrScanner = () => {
+    navigate('/inspector/qr-scanner')
+  }
+
   return (
     <div className="worker-shell">
       <WorkerTopbar
@@ -65,6 +69,8 @@ export function WorkerAppLayout() {
         rightAction={topbarAction}
         onBack={handleBack}
         onOpenMenu={() => setIsMenuOpen(true)}
+        onOpenQrScanner={handleOpenQrScanner}
+        showQrScannerAction={location.pathname !== '/inspector/qr-scanner'}
       />
 
       <Outlet context={{ setTopbarAction } satisfies WorkerOutletContext} />
