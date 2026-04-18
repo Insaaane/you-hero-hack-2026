@@ -95,7 +95,7 @@
     {
       "id": "task-1",
       "roundId": "12345",
-      "title": "Бочка с камнями 52",
+      "title": "Станок 52",
       "status": "pending",
       "statusLabel": "Ожидает проверки",
       "workshop": "Цех 3",
@@ -189,7 +189,7 @@
     {
       "id": "task-6",
       "roundId": "12345",
-      "title": "Бочка с камнями 52",
+      "title": "Станок 52",
       "status": "pending",
       "statusLabel": "Ожидает проверки",
       "workshop": "Цех 3",

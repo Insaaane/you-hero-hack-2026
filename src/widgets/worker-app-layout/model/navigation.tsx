@@ -12,7 +12,7 @@ export const inspectionRequestPath = "/inspector/rounds";
 export const workerNavigationItems = [
   {
     path: inspectionRequestPath,
-    label: "Заявка на обход",
+    label: "Заявки на обход",
     icon: <OrderedListOutlined />,
   },
   {
