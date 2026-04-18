@@ -23,8 +23,8 @@ export default defineConfig({
         'pwa-screenshot-placeholder.svg',
       ],
       manifest: {
-        name: 'Мобильный обходчик - ТО оборудования энергоцеха',
-        short_name: 'Обходчик ТО',
+        name: 'Техдозор',
+        short_name: 'Техдозор',
         description:
           'PWA для плановых обходов оборудования: маршруты, чек-листы, показания, фотофиксация и офлайн-режим.',
         theme_color: '#ffffff',

@@ -22,11 +22,14 @@ import {
 } from "antd";
 import { useLocation, useNavigate } from "react-router";
 import {
-  dispatcherRounds,
   roundTypeLabels,
-  type DispatcherRound,
-  type DispatcherRoundType,
-} from "../model/mockDispatcherRounds";
+  useGetRoundsQuery,
+  type InspectionRound,
+  type InspectionRoundType,
+} from "@/entities/inspection";
+
+type DispatcherRound = InspectionRound;
+type DispatcherRoundType = InspectionRoundType;
 
 type DispatcherRoundsTab = "planned" | "active" | "completed";
 
@@ -209,6 +212,11 @@ export function DispatcherRoundsPage() {
     useState<DispatcherRoundsTab>("planned");
   const location = useLocation();
   const navigate = useNavigate();
+  const {
+    data: rounds = [],
+    isLoading: isRoundsLoading,
+    isError: isRoundsError,
+  } = useGetRoundsQuery();
   const locationState = location.state as DispatcherRoundsLocationState | null;
   const [successAlert, setSuccessAlert] = useState(() => {
     if (!locationState?.savedRound) {
@@ -228,21 +236,22 @@ export function DispatcherRoundsPage() {
   });
   const dataSource = useMemo(() => {
     const savedRound = locationState?.savedRound;
+    const plannedRounds = rounds.filter((round) => round.status === "planned");
 
     if (!savedRound) {
-      return dispatcherRounds;
+      return plannedRounds;
     }
 
-    const hasSavedRound = dispatcherRounds.some((round) => round.id === savedRound.id);
+    const hasSavedRound = plannedRounds.some((round) => round.id === savedRound.id);
 
     if (hasSavedRound) {
-      return dispatcherRounds.map((round) =>
+      return plannedRounds.map((round) =>
         round.id === savedRound.id ? savedRound : round,
       );
     }
 
-    return [savedRound, ...dispatcherRounds];
-  }, [locationState?.savedRound]);
+    return [savedRound, ...plannedRounds];
+  }, [locationState?.savedRound, rounds]);
   const columns = useMemo(
     () =>
       getColumns((round) =>
@@ -318,8 +327,14 @@ export function DispatcherRoundsPage() {
             rowKey="id"
             columns={columns}
             dataSource={dataSource}
+            loading={isRoundsLoading}
             pagination={false}
-            locale={tableLocale}
+            locale={{
+              ...tableLocale,
+              emptyText: isRoundsError
+                ? "Не удалось загрузить обходы"
+                : "Нет запланированных обходов",
+            }}
             rowSelection={{}}
             showSorterTooltip={false}
             scroll={{ x: 1230 }}

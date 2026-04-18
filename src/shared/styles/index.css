@@ -692,6 +692,81 @@ body {
   color: #1677ff;
 }
 
+.worker-rounds-page {
+  width: min(100%, 430px);
+  min-height: calc(100svh - 52px);
+  margin: 0 auto;
+  padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+  background: #eef0f3;
+}
+
+.worker-rounds-page__title.ant-typography {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.worker-rounds-page__list.ant-space {
+  display: flex;
+  width: 100%;
+}
+
+.worker-round-card.ant-card {
+  border: 1px solid #edf0f3;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.worker-round-card.ant-card:hover {
+  border-color: #1677ff;
+}
+
+.worker-round-card.ant-card:active {
+  transform: translateY(1px);
+}
+
+.worker-round-card.ant-card:focus-visible {
+  outline: 3px solid #91caff;
+  outline-offset: 2px;
+}
+
+.worker-round-card__content.ant-space {
+  min-width: 0;
+  flex: 1;
+}
+
+.worker-round-card__number {
+  color: #2d2f33;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.worker-round-card__tag.ant-tag {
+  margin: 0;
+  border-radius: 6px;
+}
+
+.worker-round-card__meta,
+.worker-round-card__status,
+.worker-round-card__progress-text {
+  color: #565b62;
+  font-size: 14px;
+}
+
+.worker-round-card__progress.ant-progress {
+  min-width: 0;
+  flex: 1;
+}
+
+.worker-round-card__progress .ant-progress-inner {
+  background: #edf0f3;
+}
+
+.worker-round-card__icon {
+  margin-top: 4px;
+  color: #9299a3;
+}
+
 .inspection-request-page {
   --inspection-page-x: 16px;
 
@@ -1205,7 +1280,7 @@ body {
 
 .task-defect-section__content {
   position: relative;
-  padding: 16px 44px 16px 16px;
+  padding: 16px;
   border: 1px solid #edf0f2;
   border-radius: 12px;
   background: #ffffff;

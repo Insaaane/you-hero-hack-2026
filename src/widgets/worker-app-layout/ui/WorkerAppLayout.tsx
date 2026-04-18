@@ -1,6 +1,8 @@
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react'
+import { skipToken } from '@reduxjs/toolkit/query'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { setCurrentRole } from '@/app/model/sessionSlice'
+import { useGetTaskQuery } from '@/entities/inspection'
 import { useAppDispatch } from '@/shared/lib/store'
 import { useHasWindowScrolled } from '@/shared/lib/viewport'
 import {
@@ -25,13 +27,25 @@ export function WorkerAppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const hasScrolled = useHasWindowScrolled()
-  const title = useMemo(
+  const taskId = useMemo(
+    () =>
+      location.pathname.match(
+        /^\/inspector\/rounds\/[^/]+\/tasks\/([^/]+)/,
+      )?.[1],
+    [location.pathname],
+  )
+  const { data: currentTask } = useGetTaskQuery(taskId ?? skipToken)
+  const fallbackTitle = useMemo(
     () => getWorkerRouteTitle(location.pathname),
     [location.pathname],
   )
+  const title = currentTask?.title ?? fallbackTitle
   const isInspectionRoundPage = /^\/inspector\/rounds\/[^/]+\/?$/.test(
     location.pathname,
   )
+  const isInspectionRoundsListPage = location.pathname === '/inspector/rounds'
+  const shouldShowPrimaryActions =
+    isInspectionRoundsListPage || isInspectionRoundPage
 
   useEffect(() => {
     dispatch(setCurrentRole('inspector'))
@@ -48,7 +62,7 @@ export function WorkerAppLayout() {
     }
 
     if (location.pathname.includes('/rounds/')) {
-      navigate('/inspector/tasks')
+      navigate('/inspector/rounds')
       return
     }
 
@@ -68,8 +82,8 @@ export function WorkerAppLayout() {
         onBack={handleBack}
         onOpenMenu={() => setIsMenuOpen(true)}
         onOpenQrScanner={handleOpenQrScanner}
-        showMenuAction={isInspectionRoundPage}
-        showQrScannerAction={isInspectionRoundPage}
+        showMenuAction={shouldShowPrimaryActions}
+        showQrScannerAction={shouldShowPrimaryActions}
       />
 
       <Outlet context={{ setTopbarAction } satisfies WorkerOutletContext} />

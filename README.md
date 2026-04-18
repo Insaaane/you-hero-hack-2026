@@ -51,3 +51,11 @@ npm run preview
 ```bash
 npm run dev
 ```
+
+Mock API на `json-server`:
+
+```bash
+npm run mock:api
+```
+
+По умолчанию фронтенд ходит на `http://localhost:3001`. Если нужен другой адрес API, задайте `VITE_API_URL`.

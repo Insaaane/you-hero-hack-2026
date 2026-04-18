@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Card, Divider, Flex, Space, Typography } from "antd";
-import type { InspectionTask } from "../model/mockInspectionRequest";
+import type { InspectionTask } from "@/entities/inspection";
 import { InspectionTaskCard } from "./InspectionTaskCard";
 
 const { Text, Title } = Typography;
@@ -41,7 +41,7 @@ export function InspectionTasksSection({
             <Fragment key={task.id}>
               <InspectionTaskCard task={task} onOpen={onOpenTask} />
 
-              {task.marker && (
+              {task.status === "pending" && task.marker && (
                 <Divider className="inspection-tasks__divider" />
               )}
             </Fragment>

@@ -21,7 +21,7 @@ export function RoleSwitcher() {
     dispatch(setCurrentRole(nextRole));
     navigate(
       nextRole === "inspector"
-        ? "/inspector/rounds/1488228"
+        ? "/inspector/rounds"
         : "/dispatcher/rounds",
     );
   };

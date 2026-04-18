@@ -1,0 +1,493 @@
+{
+  "rounds": [
+    {
+      "id": "12345",
+      "number": "AT-00002",
+      "type": "planned",
+      "status": "planned",
+      "reason": "Плановый обход",
+      "date": "18 апреля 2026",
+      "time": "12:00",
+      "plannedTime": "12:00",
+      "tasksCount": 10,
+      "completedTasks": 3,
+      "totalTasks": 10,
+      "executor": {
+        "id": "employee-1",
+        "name": "Петров Пётр Петрович",
+        "avatarUrl": "https://i.pravatar.cc/80?img=12"
+      }
+    },
+    {
+      "id": "1488229",
+      "number": "AT-00003",
+      "type": "incident",
+      "status": "planned",
+      "reason": "Инцидент",
+      "date": "19 апреля 2026",
+      "time": "09:30",
+      "plannedTime": "09:30",
+      "tasksCount": 4,
+      "completedTasks": 0,
+      "totalTasks": 4,
+      "executor": {
+        "id": "employee-2",
+        "name": "Иванов Иван Иванович",
+        "avatarUrl": "https://i.pravatar.cc/80?img=32"
+      }
+    },
+    {
+      "id": "1488230",
+      "number": "AT-00004",
+      "type": "planned",
+      "status": "active",
+      "reason": "Плановый обход",
+      "date": "17 апреля 2026",
+      "time": "16:00",
+      "plannedTime": "16:00",
+      "tasksCount": 6,
+      "completedTasks": 3,
+      "totalTasks": 6,
+      "executor": {
+        "id": "employee-1",
+        "name": "Петров Пётр Петрович",
+        "avatarUrl": "https://i.pravatar.cc/80?img=12"
+      }
+    },
+    {
+      "id": "1488231",
+      "number": "AT-00005",
+      "type": "planned",
+      "status": "completed",
+      "reason": "Плановый обход",
+      "date": "16 апреля 2026",
+      "time": "14:00",
+      "plannedTime": "14:00",
+      "tasksCount": 8,
+      "completedTasks": 8,
+      "totalTasks": 8,
+      "executor": {
+        "id": "employee-3",
+        "name": "Сидоров Алексей Михайлович",
+        "avatarUrl": "https://i.pravatar.cc/80?img=52"
+      }
+    },
+    {
+      "id": "1488232",
+      "number": "AT-00006",
+      "type": "incident",
+      "status": "planned",
+      "reason": "Инцидент",
+      "date": "21 апреля 2026",
+      "time": "13:00",
+      "plannedTime": "13:00",
+      "tasksCount": 5,
+      "completedTasks": 1,
+      "totalTasks": 5,
+      "executor": {
+        "id": "employee-1",
+        "name": "Петров Пётр Петрович",
+        "avatarUrl": "https://i.pravatar.cc/80?img=12"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1",
+      "roundId": "12345",
+      "title": "Бочка с камнями 52",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "marker": "Следующая",
+      "readings": {}
+    },
+    {
+      "id": "task-2",
+      "roundId": "12345",
+      "title": "Токарный станок 22808",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 3",
+      "readings": {
+        "temperature": 123,
+        "pressure": 10,
+        "vibration": 133
+      }
+    },
+    {
+      "id": "task-3",
+      "roundId": "12345",
+      "title": "Насос 67",
+      "status": "critical",
+      "statusLabel": "Критическое отклонение",
+      "workshop": "Цех 3",
+      "readings": {
+        "temperature": 180,
+        "pressure": 20,
+        "vibration": 150
+      },
+      "defects": [
+        {
+          "title": "Следы протечки масла",
+          "comment": "Под насосом обнаружены свежие следы масла. Узел требует проверки уплотнений перед следующим запуском.",
+          "photos": [
+            {
+              "id": "defect-photo-1",
+              "src": "https://cdn.pixabay.com/photo/2017/07/11/23/38/construction-2495410_1280.jpg",
+              "alt": "Следы повреждения около оборудования"
+            },
+            {
+              "id": "defect-photo-2",
+              "src": "https://cdn.pixabay.com/photo/2014/04/09/10/26/building-rubble-319986_1280.jpg",
+              "alt": "Зона с дефектом после осмотра"
+            },
+            {
+              "id": "defect-photo-3",
+              "src": "https://cdn.pixabay.com/photo/2016/10/04/18/23/garbage-1715064_1280.jpg",
+              "alt": "Фотоотчет по дефекту"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "task-4",
+      "roundId": "12345",
+      "title": "Насос 67",
+      "status": "critical",
+      "statusLabel": "Критическое отклонение",
+      "workshop": "Цех 3",
+      "readings": {
+        "temperature": 123,
+        "pressure": 10,
+        "vibration": 133
+      },
+      "defects": [
+        {
+          "title": "Повреждение защитного кожуха",
+          "comment": "На корпусе защитного кожуха обнаружена деформация. Рекомендуется заменить крепеж и проверить вибрацию после ремонта.",
+          "photos": [
+            {
+              "id": "defect-photo-4",
+              "src": "https://cdn.pixabay.com/photo/2017/07/11/23/38/construction-2495410_1280.jpg",
+              "alt": "Поврежденная зона оборудования"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "task-5",
+      "roundId": "12345",
+      "title": "Бетономешалка 14",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-6",
+      "roundId": "12345",
+      "title": "Бочка с камнями 52",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-7",
+      "roundId": "12345",
+      "title": "Компрессор 31",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-8",
+      "roundId": "12345",
+      "title": "Шкаф управления 19",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-9",
+      "roundId": "12345",
+      "title": "Вентилятор 4",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-10",
+      "roundId": "12345",
+      "title": "Трубопровод 7",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 3",
+      "readings": {}
+    },
+    {
+      "id": "task-11",
+      "roundId": "1488229",
+      "title": "Линия подачи сырья 2",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 1",
+      "marker": "Следующая",
+      "readings": {}
+    },
+    {
+      "id": "task-12",
+      "roundId": "1488229",
+      "title": "Редуктор конвейера 8",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 1",
+      "readings": {}
+    },
+    {
+      "id": "task-13",
+      "roundId": "1488229",
+      "title": "Пульт оператора 4",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 1",
+      "readings": {}
+    },
+    {
+      "id": "task-14",
+      "roundId": "1488229",
+      "title": "Датчик давления 12",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 1",
+      "readings": {}
+    },
+    {
+      "id": "task-15",
+      "roundId": "1488230",
+      "title": "Компрессорная установка 31",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 2",
+      "readings": {
+        "temperature": 118,
+        "pressure": 12,
+        "vibration": 92
+      }
+    },
+    {
+      "id": "task-16",
+      "roundId": "1488230",
+      "title": "Маслостанция пресса 6",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 2",
+      "readings": {
+        "temperature": 104,
+        "pressure": 11,
+        "vibration": 88
+      }
+    },
+    {
+      "id": "task-17",
+      "roundId": "1488230",
+      "title": "Вентилятор охлаждения 4",
+      "status": "critical",
+      "statusLabel": "Критическое отклонение",
+      "workshop": "Цех 2",
+      "readings": {
+        "temperature": 162,
+        "pressure": 15,
+        "vibration": 146
+      }
+    },
+    {
+      "id": "task-18",
+      "roundId": "1488230",
+      "title": "Шкаф управления 19",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 2",
+      "marker": "Следующая",
+      "readings": {}
+    },
+    {
+      "id": "task-19",
+      "roundId": "1488230",
+      "title": "Гидронасос 5",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 2",
+      "readings": {}
+    },
+    {
+      "id": "task-20",
+      "roundId": "1488230",
+      "title": "Панель частотного привода 3",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 2",
+      "readings": {}
+    },
+    {
+      "id": "task-21",
+      "roundId": "1488231",
+      "title": "Теплообменник 2",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 96,
+        "pressure": 9,
+        "vibration": 74
+      }
+    },
+    {
+      "id": "task-22",
+      "roundId": "1488231",
+      "title": "Насос подпитки 11",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 101,
+        "pressure": 10,
+        "vibration": 81
+      }
+    },
+    {
+      "id": "task-23",
+      "roundId": "1488231",
+      "title": "Сепаратор 7",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 112,
+        "pressure": 13,
+        "vibration": 95
+      }
+    },
+    {
+      "id": "task-24",
+      "roundId": "1488231",
+      "title": "Трубопровод обратной линии 12",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 89,
+        "pressure": 8,
+        "vibration": 69
+      }
+    },
+    {
+      "id": "task-25",
+      "roundId": "1488231",
+      "title": "Клапан отсечной 16",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 98,
+        "pressure": 12,
+        "vibration": 77
+      }
+    },
+    {
+      "id": "task-26",
+      "roundId": "1488231",
+      "title": "Редуктор мешалки 9",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 119,
+        "pressure": 14,
+        "vibration": 102
+      }
+    },
+    {
+      "id": "task-27",
+      "roundId": "1488231",
+      "title": "Пульт местного управления 5",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 85,
+        "pressure": 9,
+        "vibration": 64
+      }
+    },
+    {
+      "id": "task-28",
+      "roundId": "1488231",
+      "title": "Электродвигатель 18",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 4",
+      "readings": {
+        "temperature": 121,
+        "pressure": 10,
+        "vibration": 108
+      }
+    },
+    {
+      "id": "task-29",
+      "roundId": "1488232",
+      "title": "Дробилка сырья 3",
+      "status": "checked",
+      "statusLabel": "Проверено",
+      "workshop": "Цех 5",
+      "readings": {
+        "temperature": 131,
+        "pressure": 12,
+        "vibration": 118
+      }
+    },
+    {
+      "id": "task-30",
+      "roundId": "1488232",
+      "title": "Ленточный транспортер 2",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 5",
+      "marker": "Следующая",
+      "readings": {}
+    },
+    {
+      "id": "task-31",
+      "roundId": "1488232",
+      "title": "Бункер загрузки 1",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 5",
+      "readings": {}
+    },
+    {
+      "id": "task-32",
+      "roundId": "1488232",
+      "title": "Датчик вибрации 6",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 5",
+      "readings": {}
+    },
+    {
+      "id": "task-33",
+      "roundId": "1488232",
+      "title": "Аспирационная установка 4",
+      "status": "pending",
+      "statusLabel": "Ожидает проверки",
+      "workshop": "Цех 5",
+      "readings": {}
+    }
+  ]
+}

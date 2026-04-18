@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { skipToken } from "@reduxjs/toolkit/query";
 import {
   Alert,
   Badge,
   Button,
   Card,
   Divider,
+  Empty,
   Flex,
   Form,
+  Spin,
   Typography,
 } from "antd";
 import {
@@ -17,10 +20,14 @@ import {
   useParams,
 } from "react-router";
 import {
-  getInspectionTaskById,
   getReadingViolations,
   inspectionReadingConfigs,
   inspectionTaskStatusView,
+  useGetRoundQuery,
+  useGetTaskQuery,
+  useGetTasksByRoundQuery,
+  useUpdateRoundMutation,
+  useUpdateTaskMutation,
   type InspectionDefectInfo,
   type InspectionReadingViolation,
   type InspectionTask,
@@ -54,8 +61,12 @@ type TaskSuccessAlert = {
 function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const { setTopbarAction } = useOutletContext<WorkerOutletContext>();
   const navigate = useNavigate();
-  const { roundId = "1488228" } = useParams();
+  const { roundId = "12345" } = useParams();
   const isPageBottomReached = useIsPageBottomReached();
+  const { data: round } = useGetRoundQuery(roundId);
+  const { data: roundTasks = [] } = useGetTasksByRoundQuery(roundId);
+  const [updateRound] = useUpdateRoundMutation();
+  const [updateTask] = useUpdateTaskMutation();
   const [form] = Form.useForm<ReadingFormValues>();
   const initialFormValues = useMemo(
     () => getReadingFormValues(task.readings),
@@ -63,8 +74,8 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   );
   const [status, setStatus] = useState<InspectionTaskStatus>(task.status);
   const [isEditing, setIsEditing] = useState(task.status === "pending");
-  const [defectInfos, setDefectInfos] = useState<InspectionDefectInfo[]>(() =>
-    task.defect ? [task.defect] : [],
+  const [defectInfos, setDefectInfos] = useState<InspectionDefectInfo[]>(
+    () => task.defects ?? (task.defect ? [task.defect] : []),
   );
   const [activeDefectIndex, setActiveDefectIndex] = useState<number | null>(
     null,
@@ -92,6 +103,54 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
   const canManageDefect = status === "pending" || isEditing;
   const activeDefect =
     activeDefectIndex === null ? undefined : defectInfos[activeDefectIndex];
+
+  const syncRoundProgress = useCallback(
+    async (nextStatus: InspectionTaskStatus) => {
+      if (roundTasks.length > 0) {
+        const nextRoundTasks = roundTasks.map((roundTask) =>
+          roundTask.id === task.id
+            ? { ...roundTask, status: nextStatus }
+            : roundTask,
+        );
+        const totalTasks = nextRoundTasks.length;
+        const completedTasks = nextRoundTasks.filter(
+          (roundTask) => roundTask.status !== "pending",
+        ).length;
+
+        await updateRound({
+          id: roundId,
+          patch: {
+            completedTasks,
+            tasksCount: totalTasks,
+            totalTasks,
+          },
+        }).unwrap();
+        return;
+      }
+
+      if (!round) {
+        return;
+      }
+
+      const wasCompleted = task.status !== "pending";
+      const isCompleted = nextStatus !== "pending";
+      const completedTasksDelta = Number(isCompleted) - Number(wasCompleted);
+      const completedTasks = Math.max(
+        0,
+        Math.min(round.totalTasks, round.completedTasks + completedTasksDelta),
+      );
+
+      await updateRound({
+        id: roundId,
+        patch: {
+          completedTasks,
+          tasksCount: round.totalTasks,
+          totalTasks: round.totalTasks,
+        },
+      }).unwrap();
+    },
+    [round, roundId, roundTasks, task.id, task.status, updateRound],
+  );
 
   const openAddDefectModal = useCallback(() => {
     setActiveDefectIndex(null);
@@ -122,14 +181,21 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 
   const confirmDeleteDefect = useCallback(() => {
     if (activeDefectIndex !== null) {
-      setDefectInfos((currentDefects) =>
-        currentDefects.filter((_, defectIndex) => defectIndex !== activeDefectIndex),
+      const nextDefects = defectInfos.filter(
+        (_, defectIndex) => defectIndex !== activeDefectIndex,
       );
+
+      setDefectInfos(nextDefects);
+      void updateTask({
+        id: task.id,
+        roundId,
+        patch: { defects: nextDefects },
+      });
     }
 
     setIsDeleteDefectModalOpen(false);
     setActiveDefectIndex(null);
-  }, [activeDefectIndex]);
+  }, [activeDefectIndex, defectInfos, roundId, task.id, updateTask]);
 
   useEffect(() => {
     if (canManageDefect) {
@@ -158,7 +224,7 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
     return () => window.clearTimeout(timerId);
   }, [taskSuccessAlert]);
 
-  const handleActionClick = () => {
+  const handleActionClick = async () => {
     if (!isEditing) {
       setIsEditing(true);
       return;
@@ -173,11 +239,33 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 
     if (nextViolations.length > 0) {
       setStatus("critical");
+      await updateTask({
+        id: task.id,
+        roundId,
+        patch: {
+          readings,
+          status: "critical",
+          statusLabel: inspectionTaskStatusView.critical.label,
+          defects: defectInfos,
+        },
+      }).unwrap();
+      await syncRoundProgress("critical");
       setIsDeviationModalOpen(true);
       return;
     }
 
     setStatus("checked");
+    await updateTask({
+      id: task.id,
+      roundId,
+      patch: {
+        readings,
+        status: "checked",
+        statusLabel: inspectionTaskStatusView.checked.label,
+        defects: defectInfos,
+      },
+    }).unwrap();
+    await syncRoundProgress("checked");
     navigate(`/inspector/rounds/${roundId}`, {
       state: { taskCompleted: true },
     });
@@ -200,15 +288,18 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 
   const handleSubmitDefect = (defect: InspectionDefectInfo) => {
     const isEditingDefect = defectFormMode === "edit";
+    const nextDefects =
+      isEditingDefect && activeDefectIndex !== null
+        ? defectInfos.map((currentDefect, defectIndex) =>
+            defectIndex === activeDefectIndex ? defect : currentDefect,
+          )
+        : [...defectInfos, defect];
 
-    setDefectInfos((currentDefects) => {
-      if (isEditingDefect && activeDefectIndex !== null) {
-        return currentDefects.map((currentDefect, defectIndex) =>
-          defectIndex === activeDefectIndex ? defect : currentDefect,
-        );
-      }
-
-      return [...currentDefects, defect];
+    setDefectInfos(nextDefects);
+    void updateTask({
+      id: task.id,
+      roundId,
+      patch: { defects: nextDefects },
     });
     setActiveDefectIndex(null);
     setIsDefectFormOpen(false);
@@ -339,11 +430,35 @@ function WorkerTaskDetailsContent({ task }: WorkerTaskDetailsContentProps) {
 }
 
 export function WorkerTaskDetailsPage() {
-  const { roundId = "1488228", taskId } = useParams();
-  const task = getInspectionTaskById(taskId);
+  const { roundId = "12345", taskId } = useParams();
+  const {
+    data: task,
+    isLoading,
+    isError,
+  } = useGetTaskQuery(taskId ?? skipToken);
 
-  if (!task) {
+  if (!taskId) {
     return <Navigate to={`/inspector/rounds/${roundId}`} replace />;
+  }
+
+  if (isLoading) {
+    return (
+      <main className="task-detail-page">
+        <Card style={{ display: "flex", justifyContent: "center" }}>
+          <Spin tip="Загружаем задачу" />
+        </Card>
+      </main>
+    );
+  }
+
+  if (isError || !task) {
+    return (
+      <main className="task-detail-page">
+        <Card>
+          <Empty description="Задача не найдена" />
+        </Card>
+      </main>
+    );
   }
 
   return <WorkerTaskDetailsContent key={task.id} task={task} />;

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Alert } from "antd";
+import { Alert, Card, Empty, Spin } from "antd";
 import { useLocation, useNavigate, useParams } from "react-router";
+import {
+  type InspectionTask,
+  useGetRoundQuery,
+  useGetTasksByRoundQuery,
+} from "@/entities/inspection";
 import { useIsPageBottomReached } from "@/shared/lib/viewport";
-import { inspectionRequest } from "../model/mockInspectionRequest";
 import { InspectionBottomAction } from "./InspectionBottomAction";
 import { InspectionSummaryCard } from "./InspectionSummaryCard";
 import { InspectionTasksSection } from "./InspectionTasksSection";
@@ -17,6 +21,25 @@ type InspectionAlertContent = {
   title: string;
   description: string;
 };
+
+function sortTasksByNextMarker(tasks: InspectionTask[]) {
+  return [...tasks].sort((firstTask, secondTask) => {
+    const isFirstTaskNext =
+      firstTask.status === "pending" && Boolean(firstTask.marker);
+    const isSecondTaskNext =
+      secondTask.status === "pending" && Boolean(secondTask.marker);
+
+    if (isFirstTaskNext && !isSecondTaskNext) {
+      return -1;
+    }
+
+    if (!isFirstTaskNext && isSecondTaskNext) {
+      return 1;
+    }
+
+    return 0;
+  });
+}
 
 function getInspectionAlertContent(
   state: InspectionRouteState,
@@ -43,11 +66,33 @@ function getInspectionAlertContent(
 export function WorkerInspectionRequestPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { roundId = "1488228" } = useParams();
+  const { roundId = "12345" } = useParams();
   const isPageBottomReached = useIsPageBottomReached();
+  const {
+    data: inspectionRound,
+    isLoading: isRoundLoading,
+    isError: isRoundError,
+  } = useGetRoundQuery(roundId);
+  const {
+    data: inspectionTasks = [],
+    isLoading: isTasksLoading,
+    isError: isTasksError,
+  } = useGetTasksByRoundQuery(roundId);
   const [inspectionAlert, setInspectionAlert] = useState(() =>
     getInspectionAlertContent(location.state as InspectionRouteState),
   );
+  const isLoading = isRoundLoading || isTasksLoading;
+  const isError = isRoundError || isTasksError;
+  const sortedInspectionTasks = sortTasksByNextMarker(inspectionTasks);
+  const totalTasks = sortedInspectionTasks.length;
+  const completedTasks = sortedInspectionTasks.filter(
+    (task) => task.status !== "pending",
+  ).length;
+  const nextTask =
+    sortedInspectionTasks.find(
+      (task) => task.status === "pending" && task.marker,
+    ) ??
+    sortedInspectionTasks.find((task) => task.status === "pending");
 
   const openTask = (taskId: string) => {
     navigate(`/inspector/rounds/${roundId}/tasks/${taskId}`);
@@ -90,24 +135,42 @@ export function WorkerInspectionRequestPage() {
         />
       )}
 
-      <InspectionSummaryCard
-        reason={inspectionRequest.reason}
-        date={inspectionRequest.date}
-        time={inspectionRequest.time}
-        completedTasks={inspectionRequest.completedTasks}
-        totalTasks={inspectionRequest.totalTasks}
-      />
+      {isLoading && (
+        <Card style={{display: "flex", justifyContent: "center"}}>
+          <Spin tip="Загружаем обход" />
+        </Card>
+      )}
 
-      <InspectionTasksSection
-        tasks={inspectionRequest.tasks}
-        totalTasks={inspectionRequest.totalTasks}
-        onOpenTask={openTask}
-      />
+      {!isLoading && isError && (
+        <Card>
+          <Empty description="Не удалось загрузить данные обхода" />
+        </Card>
+      )}
 
-      <InspectionBottomAction
-        isPageBottomReached={isPageBottomReached}
-        onGoToNextTask={() => openTask("task-1")}
-      />
+      {!isLoading && !isError && inspectionRound && (
+        <>
+          <InspectionSummaryCard
+            reason={inspectionRound.reason}
+            date={inspectionRound.date}
+            time={inspectionRound.time}
+            completedTasks={completedTasks}
+            totalTasks={Math.max(totalTasks, inspectionRound.totalTasks)}
+          />
+
+          <InspectionTasksSection
+            tasks={sortedInspectionTasks}
+            totalTasks={sortedInspectionTasks.length}
+            onOpenTask={openTask}
+          />
+
+          {nextTask && (
+            <InspectionBottomAction
+              isPageBottomReached={isPageBottomReached}
+              onGoToNextTask={() => openTask(nextTask.id)}
+            />
+          )}
+        </>
+      )}
     </main>
   );
 }

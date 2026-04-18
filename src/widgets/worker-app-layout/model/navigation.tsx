@@ -5,66 +5,61 @@ import {
   FieldTimeOutlined,
   OrderedListOutlined,
   PartitionOutlined,
-} from '@ant-design/icons'
-import { getInspectionTaskById } from '@/entities/inspection'
+} from "@ant-design/icons";
 
-export const inspectionRequestPath = '/inspector/rounds/1488228'
+export const inspectionRequestPath = "/inspector/rounds";
 
 export const workerNavigationItems = [
   {
     path: inspectionRequestPath,
-    label: 'Заявка на обход',
+    label: "Заявка на обход",
     icon: <OrderedListOutlined />,
   },
   {
-    path: '/inspector/route',
-    label: 'Маршрут',
+    path: "/inspector/route",
+    label: "Маршрут",
     icon: <PartitionOutlined />,
   },
   {
-    path: '/inspector/tasks',
-    label: 'Все обходы',
+    path: "/inspector/rounds",
+    label: "Все обходы",
     icon: <CheckSquareOutlined />,
   },
   {
-    path: '/inspector/checklists',
-    label: 'Чек-листы',
+    path: "/inspector/checklists",
+    label: "Чек-листы",
     icon: <FieldTimeOutlined />,
   },
   {
-    path: '/inspector/readings',
-    label: 'Показания',
+    path: "/inspector/readings",
+    label: "Показания",
     icon: <DashboardOutlined />,
   },
   {
-    path: '/inspector/photo',
-    label: 'Фотофиксация',
+    path: "/inspector/photo",
+    label: "Фотофиксация",
     icon: <CameraOutlined />,
   },
-]
+];
 
 export function getWorkerRouteTitle(pathname: string) {
-  const taskId = pathname.match(
-    /^\/inspector\/rounds\/[^/]+\/tasks\/([^/]+)/,
-  )?.[1]
-
-  if (taskId) {
-    return getInspectionTaskById(taskId)?.title ?? 'Задача'
+  if (/^\/inspector\/rounds\/[^/]+\/tasks\/[^/]+/.test(pathname)) {
+    return "Задача";
   }
 
-  const roundId = pathname.match(/^\/inspector\/rounds\/([^/]+)/)?.[1]
+  const roundId = pathname.match(/^\/inspector\/rounds\/([^/]+)/)?.[1];
 
   if (roundId) {
-    return `Обход ${roundId}`
+    return `Обход ${roundId}`;
   }
 
-  if (pathname === '/inspector/qr-scanner') {
-    return 'QR-сканер'
+  if (pathname === "/inspector/qr-scanner") {
+    return "QR-сканер";
   }
 
   const currentItem = workerNavigationItems.find(
     (item) => item.path === pathname,
-  )
+  );
 
-  return currentItem?.label ?? 'Мобильный обходчик'
+  return currentItem?.label ?? "Мобильный обходчик";
 }

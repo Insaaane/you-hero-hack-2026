@@ -1,7 +1,7 @@
 import { type KeyboardEvent } from "react";
 import { RightOutlined } from "@ant-design/icons";
 import { Badge, Card, Flex, Space, Tag, Typography } from "antd";
-import type { InspectionTask } from "../model/mockInspectionRequest";
+import type { InspectionTask } from "@/entities/inspection";
 
 const { Text } = Typography;
 
@@ -21,6 +21,9 @@ type InspectionTaskCardProps = {
 };
 
 export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
+  const hasDefects = Boolean(task.defect) || Boolean(task.defects?.length);
+  const shouldShowMarker = task.status === "pending" && Boolean(task.marker);
+
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!isActivationKey(event)) {
       return;
@@ -36,13 +39,13 @@ export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
       tabIndex={0}
       role="button"
       className={`inspection-task-card ${
-        task.marker ? "inspection-task-card--next" : ""
+        shouldShowMarker ? "inspection-task-card--next" : ""
       }`}
       styles={{ body: { padding: 0 } }}
       onClick={() => onOpen(task.id)}
       onKeyDown={handleKeyDown}
     >
-      {task.marker && (
+      {shouldShowMarker && (
         <Tag
           color="blue"
           variant="solid"
@@ -87,7 +90,7 @@ export function InspectionTaskCard({ task, onOpen }: InspectionTaskCardProps) {
               {task.workshop}
             </Text>
 
-            {task.defect && (
+            {hasDefects && (
               <>
                 <Text type="secondary" className="inspection-task-card__dot">
                   •

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import {
   DownOutlined,
   HomeOutlined,
@@ -23,14 +24,19 @@ import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import {
-  dispatcherRounds,
   roundTypeLabels,
-  type DispatcherRound,
-  type DispatcherRoundType,
-} from "@/pages/dispatcher-rounds/model/mockDispatcherRounds";
+  useCreateRoundMutation,
+  useGetRoundQuery,
+  useGetRoundsQuery,
+  useGetTasksByRoundQuery,
+  useUpdateRoundMutation,
+  type InspectionRound,
+  type InspectionRoundType,
+  type InspectionTask,
+} from "@/entities/inspection";
 
 type RoundFormValues = {
-  type: DispatcherRoundType;
+  type: InspectionRoundType;
   date: Dayjs;
   plannedTime: Dayjs;
   executor: string;
@@ -48,11 +54,11 @@ type EditableTask = TaskDraft & {
 };
 
 type DispatcherRoundFormLocationState = {
-  round?: DispatcherRound;
+  round?: InspectionRound;
 };
 
 const equipmentOptions = [
-  "Бочка с камнями 52",
+  "Станок 52",
   "Токарный станок 52",
   "Токарный станок 22808",
   "Насос 67",
@@ -60,9 +66,12 @@ const equipmentOptions = [
   "Компрессор 31",
 ].map((value) => ({ value }));
 
-const metricOptions = ["Температура", "Давление", "Вибрация", "Уровень масла"].map(
-  (value) => ({ value }),
-);
+const metricOptions = [
+  "Температура",
+  "Давление",
+  "Вибрация",
+  "Уровень масла",
+].map((value) => ({ value }));
 
 const executorOptions = [
   "Петров Пётр Петрович",
@@ -131,13 +140,15 @@ function formatTaskCount(count: number) {
   return `${count} задач`;
 }
 
-function getNextRoundNumber() {
-  const nextNumber = dispatcherRounds.length + 1;
+function getNextRoundNumber(rounds: InspectionRound[]) {
+  const nextNumber = rounds.length + 1;
 
   return `AT-${String(nextNumber).padStart(5, "0")}`;
 }
 
-function getInitialRoundValues(round?: DispatcherRound): Partial<RoundFormValues> {
+function getInitialRoundValues(
+  round?: InspectionRound,
+): Partial<RoundFormValues> {
   if (!round) {
     return {};
   }
@@ -150,9 +161,22 @@ function getInitialRoundValues(round?: DispatcherRound): Partial<RoundFormValues
   };
 }
 
+function mapApiTaskToEditableTask(task: InspectionTask): EditableTask {
+  return {
+    id: task.id,
+    title: task.title,
+    objectName: task.title,
+    metrics: ["Температура", "Давление", "Вибрация"],
+    expanded: false,
+  };
+}
+
 function TaskMetrics({ metrics }: { metrics: string[] }) {
   return (
-    <Typography.Text type="secondary" className="dispatcher-round-task__metrics">
+    <Typography.Text
+      type="secondary"
+      className="dispatcher-round-task__metrics"
+    >
       {metrics.join("  •  ")}
     </Typography.Text>
   );
@@ -162,23 +186,59 @@ export function DispatcherRoundFormPage() {
   const { roundId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = location.state as DispatcherRoundFormLocationState | null;
+  const locationState =
+    location.state as DispatcherRoundFormLocationState | null;
   const [roundForm] = Form.useForm<RoundFormValues>();
   const [draftForm] = Form.useForm<TaskDraft>();
-  const existingRound = useMemo(
-    () =>
-      locationState?.round ??
-      dispatcherRounds.find((round) => round.id === roundId),
-    [locationState?.round, roundId],
-  );
   const isEditMode = Boolean(roundId);
-  const [tasks, setTasks] = useState<EditableTask[]>(() =>
-    isEditMode ? initialTasks : [],
+  const { data: rounds = [] } = useGetRoundsQuery();
+  const { data: roundFromApi } = useGetRoundQuery(roundId ?? skipToken);
+  const { data: roundTasks = [] } = useGetTasksByRoundQuery(
+    roundId ?? skipToken,
   );
+  const [createRound, { isLoading: isCreatingRound }] =
+    useCreateRoundMutation();
+  const [updateRound, { isLoading: isUpdatingRound }] =
+    useUpdateRoundMutation();
+  const existingRound = useMemo(
+    () => locationState?.round ?? roundFromApi,
+    [locationState?.round, roundFromApi],
+  );
+  const loadedTasks = useMemo(() => {
+    if (!isEditMode) {
+      return [];
+    }
+
+    if (roundTasks.length === 0) {
+      return existingRound ? initialTasks : [];
+    }
+
+    return roundTasks.map((task, taskIndex) => ({
+      ...mapApiTaskToEditableTask(task),
+      expanded: taskIndex === 0,
+    }));
+  }, [existingRound, isEditMode, roundTasks]);
+  const [taskEdits, setTaskEdits] = useState<EditableTask[] | null>(null);
+  const tasks = taskEdits ?? loadedTasks;
   const [isDraftVisible, setIsDraftVisible] = useState(false);
   const pageTitle = isEditMode ? "Редактирование обхода" : "Создание обхода";
   const submitLabel = isEditMode ? "Редактировать обход" : "Создать обход";
   const taskCount = tasks.length + (isDraftVisible ? 1 : 0);
+  const isSubmittingRound = isCreatingRound || isUpdatingRound;
+
+  useEffect(() => {
+    if (!existingRound) {
+      return;
+    }
+
+    roundForm.setFieldsValue(getInitialRoundValues(existingRound));
+  }, [existingRound, roundForm]);
+
+  const updateTasks = (
+    updater: (currentTasks: EditableTask[]) => EditableTask[],
+  ) => {
+    setTaskEdits((currentTasks) => updater(currentTasks ?? loadedTasks));
+  };
 
   const handleAddDraft = () => {
     draftForm.resetFields();
@@ -195,12 +255,12 @@ export function DispatcherRoundFormPage() {
       expanded: false,
     };
 
-    setTasks((currentTasks) => [nextTask, ...currentTasks]);
+    updateTasks((currentTasks) => [nextTask, ...currentTasks]);
     setIsDraftVisible(false);
   };
 
   const handleUpdateTask = (taskId: string, values: TaskDraft) => {
-    setTasks((currentTasks) =>
+    updateTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.id === taskId
           ? {
@@ -216,7 +276,7 @@ export function DispatcherRoundFormPage() {
   };
 
   const handleToggleTask = (taskId: string) => {
-    setTasks((currentTasks) =>
+    updateTasks((currentTasks) =>
       currentTasks.map((task) =>
         task.id === taskId ? { ...task, expanded: !task.expanded } : task,
       ),
@@ -224,7 +284,9 @@ export function DispatcherRoundFormPage() {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== taskId));
+    updateTasks((currentTasks) =>
+      currentTasks.filter((task) => task.id !== taskId),
+    );
   };
 
   const handleSubmitRound = async () => {
@@ -242,26 +304,39 @@ export function DispatcherRoundFormPage() {
       };
 
       tasksForRound = [draftTask, ...tasks];
-      setTasks(tasksForRound);
+      setTaskEdits(tasksForRound);
       setIsDraftVisible(false);
     }
 
-    const round: DispatcherRound = {
+    const plannedTime = values.plannedTime.format("HH:mm");
+    const round: InspectionRound = {
       id: existingRound?.id ?? `round-${crypto.randomUUID()}`,
-      number: existingRound?.number ?? getNextRoundNumber(),
+      number: existingRound?.number ?? getNextRoundNumber(rounds),
       type: values.type,
+      status: existingRound?.status ?? "planned",
+      reason: roundTypeLabels[values.type],
       tasksCount: tasksForRound.length,
+      completedTasks: existingRound?.completedTasks ?? 0,
+      totalTasks: tasksForRound.length,
       executor: {
+        id: existingRound?.executor.id ?? `employee-${crypto.randomUUID()}`,
         name: values.executor,
-        avatarUrl: existingRound?.executor.avatarUrl ?? "https://i.pravatar.cc/80?img=12",
+        avatarUrl:
+          existingRound?.executor.avatarUrl ??
+          "https://i.pravatar.cc/80?img=12",
       },
       date: formatDate(values.date),
-      plannedTime: values.plannedTime.format("HH:mm"),
+      time: plannedTime,
+      plannedTime,
     };
+
+    const savedRound = isEditMode
+      ? await updateRound({ id: round.id, patch: round }).unwrap()
+      : await createRound(round).unwrap();
 
     navigate("/dispatcher/rounds", {
       state: {
-        savedRound: round,
+        savedRound,
         roundSaveMode: isEditMode ? "edit" : "create",
       },
     });
@@ -285,11 +360,18 @@ export function DispatcherRoundFormPage() {
         />
 
         <Flex align="center" justify="space-between" gap={24}>
-          <Typography.Title level={1} className="dispatcher-round-form-page__title">
+          <Typography.Title
+            level={1}
+            className="dispatcher-round-form-page__title"
+          >
             {pageTitle}
           </Typography.Title>
 
-          <Button type="primary" onClick={() => void handleSubmitRound()}>
+          <Button
+            type="primary"
+            loading={isSubmittingRound}
+            onClick={() => void handleSubmitRound()}
+          >
             {submitLabel}
           </Button>
         </Flex>
@@ -305,7 +387,9 @@ export function DispatcherRoundFormPage() {
             <Typography.Title level={2} className="dispatcher-round-card-title">
               Задачи
             </Typography.Title>
-            <Typography.Text type="secondary">{formatTaskCount(taskCount)}</Typography.Text>
+            <Typography.Text type="secondary">
+              {formatTaskCount(taskCount)}
+            </Typography.Text>
           </Flex>
 
           <Button
@@ -328,7 +412,10 @@ export function DispatcherRoundFormPage() {
                 className="dispatcher-round-task dispatcher-round-task--expanded"
                 styles={{ body: { padding: 16 } }}
               >
-                <Typography.Title level={3} className="dispatcher-round-task__title">
+                <Typography.Title
+                  level={3}
+                  className="dispatcher-round-task__title"
+                >
                   Новая задача
                 </Typography.Title>
 
@@ -364,7 +451,9 @@ export function DispatcherRoundFormPage() {
                 <Divider className="dispatcher-round-task__divider" />
 
                 <Flex justify="end" gap={12}>
-                  <Button onClick={() => setIsDraftVisible(false)}>Удалить</Button>
+                  <Button onClick={() => setIsDraftVisible(false)}>
+                    Удалить
+                  </Button>
                   <Button type="primary" onClick={() => void handleSaveDraft()}>
                     Сохранить задачу
                   </Button>

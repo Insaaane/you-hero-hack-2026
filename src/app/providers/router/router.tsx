@@ -6,6 +6,7 @@ import { DispatcherRoundsPage } from "@/pages/dispatcher-rounds";
 import { PlaceholderPage } from "@/pages/placeholder";
 import { WorkerInspectionRequestPage } from "@/pages/worker-inspection-request";
 import { WorkerQrScannerPage } from "@/pages/worker-qr-scanner";
+import { WorkerRoundsPage } from "@/pages/worker-rounds";
 import { WorkerTaskDetailsPage } from "@/pages/worker-task-details";
 import { DispatcherAppLayout } from "@/widgets/dispatcher-app-layout";
 import { WorkerAppLayout } from "@/widgets/worker-app-layout";
@@ -13,7 +14,7 @@ import { WorkerAppLayout } from "@/widgets/worker-app-layout";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/inspector/rounds/1488228" replace />,
+    element: <Navigate to="/inspector/rounds" replace />,
   },
   {
     path: "/inspector",
@@ -21,11 +22,27 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/inspector/rounds/1488228" replace />,
+        element: <Navigate to="/inspector/rounds" replace />,
+      },
+      {
+        path: "rounds",
+        element: <WorkerRoundsPage />,
       },
       {
         path: "rounds/:roundId",
         element: <WorkerInspectionRequestPage />,
+      },
+      {
+        path: "rounds/:roundId/tasks/:taskId",
+        element: <WorkerTaskDetailsPage />,
+      },
+      {
+        path: "qr-scanner",
+        element: <WorkerQrScannerPage />,
+      },
+      {
+        path: "tasks",
+        element: <Navigate to="/inspector/rounds" replace />,
       },
       {
         path: "route",
@@ -35,23 +52,6 @@ export const router = createBrowserRouter([
             description="Здесь появится последовательность объектов и навигация по маршруту."
           />
         ),
-      },
-      {
-        path: "tasks",
-        element: (
-          <PlaceholderPage
-            title="Все обходы"
-            description="Здесь появится список обходов по текущему плану."
-          />
-        ),
-      },
-      {
-        path: "rounds/:roundId/tasks/:taskId",
-        element: <WorkerTaskDetailsPage />,
-      },
-      {
-        path: "qr-scanner",
-        element: <WorkerQrScannerPage />,
       },
       {
         path: "checklists",
